@@ -5,11 +5,13 @@
 
 #define ARGVMAX 20
 
+#define FRAMES_DELETED 10
+
 #define boolean int
 #define TRUE 1
 #define FALSE 0
 
-FILE * criaPastaParaLeitura(const char * fileName){
+FILE * openFileForReading(const char * fileName){
     FILE * file = fopen(fileName, "r");
     if(file == NULL){
         printf("It was not possible to open file!\n");
@@ -18,45 +20,43 @@ FILE * criaPastaParaLeitura(const char * fileName){
     return file;
 }
 
-void destroiPasta(FILE ** pasta){
+void closeFile(FILE ** pasta){
     fclose(*pasta);
     return;
 }
 
-int calculaTamanhoDaPasta(const char * nomeDaPasta){
-    FILE * pasta = criaPastaParaLeitura(nomeDaPasta);
+int calculateFileSize(const char * fileName){
+    FILE * file = openFileForReading(fileName);
 
-    int tamanhoDaPasta = 0;
-    uint8_t armazenadorDeEntradasTemporario;
+    int fileSize = 0;
+    uint8_t temporary;
 
-    fscanf(pasta, " %hhu,", &armazenadorDeEntradasTemporario);
-    while(!feof(pasta)){
-        tamanhoDaPasta++;
-        fscanf(pasta, " %hhu,", &armazenadorDeEntradasTemporario);
-        for(int i = 0; i < 10000000; i++);
-        printf("Pasta = %hhu\n", armazenadorDeEntradasTemporario);
+    fscanf(file, " %hhu,", &temporary);
+    while(!feof(file)){
+        fileSize++;
+        fscanf(file, "%hhu,", &temporary);
     }
 
-    destroiPasta(&pasta);
+    closeFile(&file);
 
-    return tamanhoDaPasta;
+    return fileSize;
 }
 
-uint8_t * paleta(){
-    const char nomeDaPasta[] = "../pallete/pallete.txt";
+uint8_t * pallete(){
+    const char fileName[] = "../pallete/pallete.txt";
 
-    int tamanhoDaPasta = calculaTamanhoDaPasta(nomeDaPasta);
+    int fileSize = calculateFileSize(fileName);
 
-    FILE * pastaDaPaleta = criaPastaParaLeitura(nomeDaPasta);
+    FILE * palleteFile = openFileForReading(fileName);
 
-    uint8_t * paleta = (uint8_t*) malloc(sizeof(uint8_t) * tamanhoDaPasta);
-    if(paleta == NULL) return NULL;
+    uint8_t * pallete = (uint8_t*) malloc(sizeof(uint8_t) * fileSize);
+    if(pallete == NULL) return NULL;
 
-    for(int i = 0; i < tamanhoDaPasta; i++)
-        fscanf(pastaDaPaleta, " %hhu,", &paleta[i]);
+    for(int i = 0; i < fileSize; i++)
+        fscanf(palleteFile, " %hhu,", &pallete[i]);
 
-    destroiPasta(&pastaDaPaleta);
-    return paleta;
+    closeFile(&palleteFile);
+    return pallete;
 }
 
 boolean isArgcValid(int argc){
@@ -93,7 +93,7 @@ int stringToInt(char * string){
 
 int calculateStepsFileSize(char * stepsFileName, char * numbersPerLineAsChar){
     int numbersPerLine = stringToInt(numbersPerLineAsChar);
-    int totalOfNumbers = calculaTamanhoDaPasta(stepsFileName);
+    int totalOfNumbers = calculateFileSize(stepsFileName);
     int totalOfLines = totalOfNumbers / numbersPerLine;
     return totalOfLines;
 }
@@ -117,11 +117,22 @@ void insertPixelsOnFrame(ge_GIF * gif, int height, int width, int pixel, int j){
     }
 }
 
+boolean willFrameBePrinted(int * counter){
+    if(*counter == FRAMES_DELETED){
+        *counter = 0;
+        return TRUE; 
+    }
+    else{
+        (*counter) ++;
+        return FALSE;
+    }
+}
+
 int main(int argc, char * argv[]){
     treatInvalidArgs(argc);
     char * stepsFileName = calculateStepsFilePath(argv[1]);
     int i, j;
-    uint8_t * paletaDeCores = paleta();
+    uint8_t * paletaDeCores = pallete();
     int numberOfSteps = calculateStepsFileSize(stepsFileName, argv[1]);
 
     //Number of steps == number of lines of the steps file
@@ -139,15 +150,14 @@ int main(int argc, char * argv[]){
         0               /* infinite loop */
     );
     /* draw some frames */
-    int pixel;
-    int willThisFrameBePrinted = TRUE;
+    int pixel, counter = 0;
+    boolean willThisFrameBePrinted = TRUE;
     for (i = 0; i < numberOfSteps; i++) {
         for (j = 0; j < width; j ++){
             scanf(" %d, ", &pixel);
             insertPixelsOnFrame(gif, height, width, pixel, j);
         }
-        if(willThisFrameBePrinted) willThisFrameBePrinted = FALSE;
-        else willThisFrameBePrinted = TRUE;
+        willThisFrameBePrinted = willFrameBePrinted(&counter);
         if(willThisFrameBePrinted)
             ge_add_frame(gif, 1);
     }
