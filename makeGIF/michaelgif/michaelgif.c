@@ -5,7 +5,7 @@
 
 #define ARGVMAX 20
 
-#define FRAMES_DELETED 2
+#define FRAMES_DELETED 0
 
 #define boolean int
 #define TRUE 1
@@ -147,11 +147,24 @@ int main(int argc, char * argv[]){
         width, height,           /* canvas size */
         paletaDeCores,  /* color pallete */
         7,              /* palette depth == log2(# of colors) */
-        0               /* infinite loop */
+        1               /* infinite loop */
     );
     /* draw some frames */
     int pixel, counter = 0;
     boolean willThisFrameBePrinted = TRUE;
+
+    // PixelColumn ** pixelMatrix = createPixelMatrix(width, height);
+
+    // int columns[height];
+    // for (i = 0; i < width; i ++){
+    //     for(int j = 0; j < height; j++){
+    //         columns[j] = (j + i + height) % height;
+    //     }
+    //     copyArrayToPixelColumn(columns, pixelMatrix[i], height);
+    // }
+
+    // printMatrix(pixelMatrix, width, height);
+
     for (i = 0; i < numberOfSteps; i++) {
         for (j = 0; j < width; j ++){
             scanf(" %d, ", &pixel);
@@ -163,6 +176,8 @@ int main(int argc, char * argv[]){
     }
     /* remember to close the GIF */
     ge_close_gif(gif);
+
+    // deletePixelMatrix(&pixelMatrix, width);
 
     free(stepsFileName);
     return 0;
