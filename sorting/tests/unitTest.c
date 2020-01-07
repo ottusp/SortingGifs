@@ -68,7 +68,7 @@ char * filePath(char * testNumber){
     exit(1);
   }
 
-  strcat(pathName, "./testInAndOut/teste.out/teste");
+  strcat(pathName, "./testInAndOut/test.out/test");
   strcat(pathName, testNumber);
   strcat(pathName, ".out");
 

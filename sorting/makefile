@@ -1,2 +1,10 @@
+$(MAKE) = make
+
 compile:
-	gcc -o $(SORTINGMETHOD) $(SORTINGMETHOD).c
+	gcc -o ./$(SORTINGMETHOD)/$(SORTINGMETHOD) ./$(SORTINGMETHOD)/$(SORTINGMETHOD).c
+
+testOutput:
+	$(MAKE) -C tests/ testOutput TEST=$(TEST) SORTINGMETHOD=$(SORTINGMETHOD)
+
+test:
+	$(MAKE) -C tests/ test TEST=$(TEST) SORTINGMETHOD=$(SORTINGMETHOD)
