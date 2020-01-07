@@ -9,13 +9,13 @@
 #define TRUE 1
 #define FALSE 0
 
-FILE * criaPastaParaLeitura(const char * nomeDaPasta){
-    FILE * pasta = fopen(nomeDaPasta, "r");
-    if(pasta == NULL){
-        printf("Não foi possível abrir a pasta!\n");
+FILE * criaPastaParaLeitura(const char * fileName){
+    FILE * file = fopen(fileName, "r");
+    if(file == NULL){
+        printf("It was not possible to open file!\n");
         exit(1);
     }
-    return pasta;
+    return file;
 }
 
 void destroiPasta(FILE ** pasta){
@@ -33,6 +33,8 @@ int calculaTamanhoDaPasta(const char * nomeDaPasta){
     while(!feof(pasta)){
         tamanhoDaPasta++;
         fscanf(pasta, " %hhu,", &armazenadorDeEntradasTemporario);
+        for(int i = 0; i < 10000000; i++);
+        printf("Pasta = %hhu\n", armazenadorDeEntradasTemporario);
     }
 
     destroiPasta(&pasta);
@@ -41,7 +43,7 @@ int calculaTamanhoDaPasta(const char * nomeDaPasta){
 }
 
 uint8_t * paleta(){
-    const char nomeDaPasta[] = "./paleta/paleta.txt";
+    const char nomeDaPasta[] = "../pallete/pallete.txt";
 
     int tamanhoDaPasta = calculaTamanhoDaPasta(nomeDaPasta);
 
