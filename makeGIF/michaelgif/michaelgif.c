@@ -5,7 +5,7 @@
 
 #define ARGVMAX 20
 
-#define FRAMES_DELETED 10
+#define FRAMES_DELETED 2
 
 #define boolean int
 #define TRUE 1

@@ -108,7 +108,7 @@ boolean areArraysEqual(int * correctTestOutput, int * programOutput, int sizeOfO
 void compareTestToProgram(int * correctTestOutput, int * programOutput, int sizeOfOutputs){
   if(areArraysEqual(correctTestOutput, programOutput, sizeOfOutputs))
     printf("Sorting passed on the test!\n");
-  else printf("Sorting failed the test");
+  else printf("Sorting failed the test\n");
   return;
 }
 
